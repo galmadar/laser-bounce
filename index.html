@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" />
     <title>Laser Bounce</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
     <style>
       :root {
         color-scheme: dark;
-        /* Colours come from src/render/palette.ts, set on this element at startup. */
-        --font: 'Courier New', ui-monospace, Menlo, Consolas, monospace;
+        /* The one colour outside palette.ts: paints the page before the script sets the rest. */
+        background: #3a3558;
+        --font: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
       }
       * { box-sizing: border-box; }
       html, body { margin: 0; height: 100%; }
@@ -17,9 +21,7 @@
         background: var(--bg);
         background-image: radial-gradient(circle at 50% 40%, var(--bg-glow) 0%, var(--bg) 70%);
         color: var(--ink);
-        font: bold 14px/1.35 var(--font);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+        font: 700 15px/1.4 var(--font);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -27,6 +29,7 @@
         touch-action: manipulation;
         -webkit-user-select: none;
         user-select: none;
+        -webkit-font-smoothing: antialiased;
       }
       #bar {
         width: 100%;
@@ -36,106 +39,142 @@
         align-items: center;
         justify-content: space-between;
         gap: 6px 12px;
-        padding: 8px 12px 4px;
+        padding: 12px 14px 4px;
       }
       h1 {
         margin: 0;
-        font-size: 18px;
+        font-size: 24px;
+        font-weight: 900;
         color: var(--gold);
-        text-shadow: 2px 2px 0 var(--title-shadow), 0 0 8px var(--gold-glow);
-        letter-spacing: 0.12em;
+        text-shadow: 0 2px 14px var(--gold-glow);
+        letter-spacing: 0.01em;
       }
-      #level-label { color: var(--ink); font-size: 13px; flex: 1 1 auto; }
-      .buttons { display: flex; gap: 6px; }
+      #level-label { color: var(--ink); font-size: 14px; flex: 1 1 auto; }
+      .buttons { display: flex; gap: 8px; }
       button {
-        font: bold 14px/1 var(--font);
-        text-transform: uppercase;
+        font: 800 15px/1 var(--font);
         color: var(--button-ink);
         background: var(--button);
         border: 0;
-        border-bottom: 3px solid var(--button-edge);
-        border-right: 3px solid var(--button-edge);
-        box-shadow: 0 0 0 2px var(--ring);
-        padding: 7px 10px;
-        min-width: 34px;
+        border-radius: 12px;
+        box-shadow: 0 3px 0 var(--button-edge), 0 6px 14px var(--shadow-soft);
+        padding: 8px 10px;
+        min-width: 42px;
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
+        transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
       }
-      button:active:not(:disabled) { transform: translate(1px, 2px); border-bottom-width: 1px; border-right-width: 1px; }
-      button:disabled { background: var(--button-off); border-color: var(--button-off-edge); color: var(--button-off-ink); cursor: default; }
-      button.on { background: var(--gold); }
-      button.primary { background: var(--gold); border-color: var(--button-hot-edge); }
+      button svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      button:hover:not(:disabled) {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+        box-shadow: 0 4px 0 var(--button-edge), 0 9px 18px var(--shadow-soft);
+      }
+      button:active:not(:disabled) {
+        transform: translateY(2px);
+        box-shadow: 0 1px 0 var(--button-edge), 0 2px 6px var(--shadow-soft);
+      }
+      button:focus-visible { outline: 3px solid var(--edge); outline-offset: 2px; }
+      button:disabled {
+        background: var(--button-off);
+        color: var(--button-off-ink);
+        box-shadow: 0 3px 0 var(--button-off-edge);
+        cursor: default;
+      }
+      button.on, button.primary { background: var(--gold); --button-edge: var(--button-hot-edge); }
       .stage { flex: 0 0 auto; display: flex; justify-content: center; padding-top: 6px; }
       canvas {
         display: block;
-        image-rendering: pixelated;
-        image-rendering: crisp-edges;
         touch-action: none;
         -webkit-touch-callout: none;
-        box-shadow: 0 0 0 3px var(--ring), 0 0 24px var(--beam-halo);
       }
-      #hint { margin: 8px 12px 0; max-width: 520px; text-align: center; color: var(--dim); font-size: 12px; min-height: 2.7em; }
+      #hint { margin: 6px 16px 0; max-width: 520px; text-align: center; color: var(--dim); font-size: 14px; font-weight: 700; min-height: 2.8em; }
       #help {
         position: fixed;
         right: 12px;
-        top: 56px;
+        top: 64px;
         z-index: 5;
         width: min(340px, calc(100vw - 24px));
         background: var(--panel);
-        border: 3px solid var(--edge);
-        box-shadow: 0 0 0 3px var(--ring);
-        padding: 10px 12px 12px;
-        text-transform: none;
+        border: 2px solid var(--edge);
+        border-radius: 18px;
+        box-shadow: 0 18px 44px var(--shadow);
+        padding: 14px 16px 16px;
       }
-      #help h2 { margin: 0 0 6px; font-size: 14px; color: var(--gold); text-transform: uppercase; }
-      #help dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: 12px; }
-      #help dt { color: var(--gold); white-space: nowrap; }
-      #help dd { margin: 0; color: var(--ink); font-weight: normal; }
-      #help-close { position: absolute; top: 6px; right: 6px; padding: 3px 7px; min-width: 0; }
+      #help h2 { margin: 0 0 8px; font-size: 18px; font-weight: 900; color: var(--gold); }
+      #help dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 5px 12px; font-size: 13px; }
+      #help dt { color: var(--gold); font-weight: 800; white-space: nowrap; }
+      #help dd { margin: 0; color: var(--ink); font-weight: 600; }
+      #help-close { position: absolute; top: 10px; right: 10px; padding: 0; min-width: 34px; min-height: 34px; border-radius: 10px; }
+      #help-close svg { width: 16px; height: 16px; }
       .modal-overlay {
         position: fixed;
         inset: 0;
         z-index: 10;
         background: var(--overlay);
+        -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 16px;
+        animation: fade 0.18s ease-out;
       }
       .modal {
         background: var(--panel);
-        border: 3px solid var(--edge);
-        box-shadow: 0 0 0 3px var(--ring), 6px 6px 0 3px var(--ring);
-        padding: 16px 18px;
-        width: min(360px, 100%);
+        border: 2px solid var(--edge);
+        border-radius: 22px;
+        box-shadow: 0 24px 60px var(--shadow);
+        padding: 22px 22px 20px;
+        width: min(380px, 100%);
         text-align: center;
+        animation: rise 0.22s ease-out;
       }
-      .modal h2 { margin: 0 0 8px; color: var(--gold); font-size: 18px; }
-      .modal p { margin: 0 0 12px; color: var(--ink); text-transform: none; font-weight: normal; }
+      .modal h2 { margin: 0 0 8px; color: var(--gold); font-size: 22px; font-weight: 900; }
+      .modal p { margin: 0 0 16px; color: var(--ink); font-weight: 600; }
       .modal input {
-        font: bold 22px var(--font);
+        font: 800 24px var(--font);
         width: 5em;
         text-align: center;
-        margin: 0 0 14px;
-        padding: 4px;
+        margin: 0 0 16px;
+        padding: 6px;
         background: var(--field);
         color: var(--gold);
-        border: 3px solid var(--edge);
+        border: 2px solid var(--edge);
+        border-radius: 12px;
       }
+      .modal input:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
       .modal input.nope { animation: nope 0.3s; border-color: var(--warn); }
-      .modal-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+      .modal-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
       .modal.win { border-color: var(--gold); }
       .modal.win h2 {
-        font-size: 24px;
+        font-size: 28px;
         color: var(--win);
-        text-shadow: 0 0 10px var(--win-glow), 2px 2px 0 var(--win-shade);
-        animation: blink 0.5s steps(2) 4;
+        text-shadow: 0 0 18px var(--win-glow);
+        animation: pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
       }
       @keyframes nope { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
-      @keyframes blink { 50% { opacity: 0.2; } }
+      @keyframes fade { from { opacity: 0; } }
+      @keyframes rise { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
+      @keyframes pop { from { transform: scale(0.6); opacity: 0; } }
       @media (max-width: 480px) {
-        h1 { font-size: 15px; }
-        #level-label { order: 3; flex-basis: 100%; font-size: 12px; }
-        button { padding: 6px 8px; min-width: 30px; }
+        #bar { padding: 10px 12px 2px; }
+        h1 { font-size: 20px; }
+        #level-label { order: 3; flex-basis: 100%; font-size: 13px; }
+        .buttons { gap: 6px; }
+        button { padding: 6px 10px; min-width: 38px; min-height: 38px; }
+        button svg { width: 18px; height: 18px; }
       }
     </style>
   </head>
@@ -143,12 +182,12 @@
     <header id="bar">
       <h1>Laser Bounce</h1>
       <div class="buttons">
-        <button id="btn-prev" title="Previous level (P)" aria-label="Previous level">◀</button>
-        <button id="btn-next" title="Next level (N)" aria-label="Next level">▶</button>
-        <button id="btn-undo" title="Undo (Ctrl/Cmd Z)" aria-label="Undo">↶</button>
-        <button id="btn-redo" title="Redo (Ctrl/Cmd Shift Z)" aria-label="Redo">↷</button>
-        <button id="btn-restart" title="Start again (R)" aria-label="Start again">↺</button>
-        <button id="btn-help" title="Controls (?)" aria-label="Controls">?</button>
+        <button id="btn-prev" title="Previous level (P)" aria-label="Previous level"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg></button>
+        <button id="btn-next" title="Next level (N)" aria-label="Next level"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
+        <button id="btn-undo" title="Undo (Ctrl/Cmd Z)" aria-label="Undo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></svg></button>
+        <button id="btn-redo" title="Redo (Ctrl/Cmd Shift Z)" aria-label="Redo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14l5-5-5-5" /><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" /></svg></button>
+        <button id="btn-restart" title="Start again (R)" aria-label="Start again"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5" /><path d="M3.5 3.5v5h5" /></svg></button>
+        <button id="btn-help" title="Controls (?)" aria-label="Controls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.3 8.8a3.8 3.8 0 0 1 7.4 1.1c0 2.5-3.7 3-3.7 5.4" /><path d="M12 19.6h.01" /></svg></button>
       </div>
       <div id="level-label"></div>
     </header>
@@ -156,7 +195,7 @@
     <p id="hint"></p>
     <aside id="help" hidden>
       <h2>Controls</h2>
-      <button id="help-close" aria-label="Close">✕</button>
+      <button id="help-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
       <dl id="help-keys"></dl>
     </aside>
     <script type="module" src="/src/main.ts"></script>
