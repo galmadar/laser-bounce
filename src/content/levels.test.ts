@@ -9,7 +9,7 @@ const SOLUTIONS: Record<string, Move[]> = {
     { type: 'turn', at: { x: 7, y: 1 } },
     { type: 'place', at: { x: 7, y: 6 }, kind: 'mirror', turn: 0 },
   ],
-  'round-the-wall': [
+  'b-before-c': [
     { type: 'place', at: { x: 3, y: 5 }, kind: 'mirror', turn: 0 },
     { type: 'place', at: { x: 3, y: 0 }, kind: 'mirror', turn: 0 },
     { type: 'turn', at: { x: 8, y: 0 } },

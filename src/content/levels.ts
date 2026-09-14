@@ -20,8 +20,8 @@ export const LEVELS: readonly LevelDef[] = [
     tray: { mirror: 1 },
   },
   {
-    id: 'round-the-wall',
-    name: 'Round the Wall',
+    id: 'b-before-c',
+    name: 'B Before C',
     hint: 'The light has to reach B before C.',
     map: [
       '......../.',
