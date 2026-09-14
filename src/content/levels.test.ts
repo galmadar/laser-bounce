@@ -35,6 +35,84 @@ const SOLUTIONS: Record<string, Move[]> = {
     { type: 'turn', at: { x: 3, y: 1 } },
     { type: 'place', at: { x: 3, y: 9 }, kind: 'mirror', turn: 1 },
   ],
+  detour: [
+    { type: 'place', at: { x: 3, y: 2 }, kind: 'mirror', turn: 0 },
+    { type: 'turn', at: { x: 3, y: 4 } },
+    { type: 'place', at: { x: 5, y: 4 }, kind: 'mirror', turn: 1 },
+    { type: 'place', at: { x: 7, y: 7 }, kind: 'mirror', turn: 1 },
+  ],
+  'too-soon': [
+    { type: 'place', at: { x: 2, y: 1 }, kind: 'mirror', turn: 0 },
+    { type: 'place', at: { x: 6, y: 1 }, kind: 'mirror', turn: 1 },
+    { type: 'place', at: { x: 2, y: 6 }, kind: 'mirror', turn: 0 },
+    { type: 'turn', at: { x: 4, y: 6 } },
+    { type: 'turn', at: { x: 6, y: 6 } },
+    { type: 'place', at: { x: 4, y: 8 }, kind: 'mirror', turn: 1 },
+  ],
+  crossroads: [
+    { type: 'turn', at: { x: 5, y: 2 } },
+    { type: 'place', at: { x: 9, y: 2 }, kind: 'mirror', turn: 1 },
+    { type: 'place', at: { x: 2, y: 5 }, kind: 'mirror', turn: 0 },
+    { type: 'place', at: { x: 5, y: 5 }, kind: 'mirror', turn: 0 },
+    { type: 'place', at: { x: 7, y: 5 }, kind: 'mirror', turn: 1 },
+    { type: 'turn', at: { x: 9, y: 5 } },
+  ],
+  'side-door': [
+    { type: 'place', at: { x: 6, y: 0 }, kind: 'mirror', turn: 0 },
+    { type: 'place', at: { x: 7, y: 1 }, kind: 'block', turn: 0 },
+    { type: 'turn', at: { x: 6, y: 3 } },
+    { type: 'turn', at: { x: 9, y: 3 } },
+    { type: 'place', at: { x: 7, y: 4 }, kind: 'splitter', turn: 0 },
+    { type: 'place', at: { x: 9, y: 4 }, kind: 'mirror', turn: 0 },
+  ],
+  'long-way-round': [
+    { type: 'place', at: { x: 8, y: 0 }, kind: 'mirror', turn: 0 },
+    { type: 'place', at: { x: 0, y: 2 }, kind: 'mirror', turn: 0 },
+    { type: 'place', at: { x: 3, y: 3 }, kind: 'mirror', turn: 0 },
+    { type: 'place', at: { x: 0, y: 4 }, kind: 'mirror', turn: 1 },
+    { type: 'turn', at: { x: 3, y: 4 } },
+    { type: 'place', at: { x: 5, y: 4 }, kind: 'mirror', turn: 1 },
+  ],
+  shortcut: [
+    { type: 'place', at: { x: 4, y: 3 }, kind: 'mirror', turn: 0 },
+    { type: 'place', at: { x: 7, y: 4 }, kind: 'block', turn: 0 },
+    { type: 'place', at: { x: 4, y: 7 }, kind: 'mirror', turn: 1 },
+    { type: 'place', at: { x: 7, y: 7 }, kind: 'splitter', turn: 1 },
+  ],
+  'head-start': [
+    { type: 'place', at: { x: 7, y: 0 }, kind: 'mirror', turn: 0 },
+    { type: 'place', at: { x: 9, y: 0 }, kind: 'mirror', turn: 1 },
+    { type: 'turn', at: { x: 7, y: 4 } },
+    { type: 'place', at: { x: 9, y: 4 }, kind: 'mirror', turn: 0 },
+    { type: 'place', at: { x: 6, y: 5 }, kind: 'block', turn: 0 },
+    { type: 'place', at: { x: 6, y: 8 }, kind: 'splitter', turn: 0 },
+    { type: 'turn', at: { x: 7, y: 8 } },
+  ],
+  tangle: [
+    { type: 'place', at: { x: 2, y: 1 }, kind: 'mirror', turn: 0 },
+    { type: 'place', at: { x: 5, y: 1 }, kind: 'mirror', turn: 1 },
+    { type: 'place', at: { x: 5, y: 2 }, kind: 'mirror', turn: 1 },
+    { type: 'turn', at: { x: 6, y: 5 } },
+    { type: 'turn', at: { x: 6, y: 6 } },
+  ],
+  'photo-finish': [
+    { type: 'place', at: { x: 2, y: 3 }, kind: 'splitter', turn: 1 },
+    { type: 'place', at: { x: 7, y: 3 }, kind: 'mirror', turn: 1 },
+    { type: 'place', at: { x: 2, y: 7 }, kind: 'block', turn: 0 },
+    { type: 'turn', at: { x: 3, y: 8 } },
+    { type: 'place', at: { x: 3, y: 9 }, kind: 'mirror', turn: 1 },
+    { type: 'place', at: { x: 7, y: 9 }, kind: 'mirror', turn: 0 },
+  ],
+  'last-light': [
+    { type: 'place', at: { x: 0, y: 5 }, kind: 'mirror', turn: 0 },
+    { type: 'turn', at: { x: 3, y: 5 } },
+    { type: 'place', at: { x: 3, y: 6 }, kind: 'mirror', turn: 0 },
+    { type: 'turn', at: { x: 7, y: 6 } },
+    { type: 'place', at: { x: 3, y: 8 }, kind: 'splitter', turn: 0 },
+    { type: 'place', at: { x: 6, y: 8 }, kind: 'block', turn: 0 },
+    { type: 'place', at: { x: 4, y: 9 }, kind: 'mirror', turn: 1 },
+    { type: 'place', at: { x: 7, y: 9 }, kind: 'mirror', turn: 0 },
+  ],
 };
 
 function play(p: Puzzle, move: Move): boolean {
@@ -51,13 +129,23 @@ function play(p: Puzzle, move: Move): boolean {
 }
 
 describe('level registry', () => {
-  it('has 5 levels with unique ids', () => {
-    expect(LEVELS).toHaveLength(5);
+  it('has 15 levels with unique ids and names', () => {
+    expect(LEVELS).toHaveLength(15);
     expect(new Set(LEVELS.map((l) => l.id)).size).toBe(LEVELS.length);
+    expect(new Set(LEVELS.map((l) => l.name)).size).toBe(LEVELS.length);
   });
 
-  it('level n has n+1 targets: A→B first, one more each level', () => {
-    LEVELS.forEach((lvl, i) => expect(targetCount(parseLevel(lvl))).toBe(i + 2));
+  it('levels 1–5 teach one more stop each: A→B first', () => {
+    LEVELS.slice(0, 5).forEach((lvl, i) => expect(targetCount(parseLevel(lvl))).toBe(i + 2));
+  });
+
+  it('every level has a hint and fits the tray and the A–I stop letters', () => {
+    for (const lvl of LEVELS) {
+      expect(lvl.hint.length).toBeGreaterThan(0);
+      expect(targetCount(parseLevel(lvl))).toBeLessThanOrEqual(9);
+      // "x10" would not fit in a tray slot.
+      for (const n of Object.values(lvl.tray)) expect(n).toBeLessThanOrEqual(9);
+    }
   });
 });
 

@@ -1,7 +1,9 @@
 # Laser Bounce — design
 
 A laser is always on. Turn and place mirrors so the beam reaches the stops
-**in order**: A then B on level 1, A→B→C on level 2, one more stop each level.
+**in order**: A then B on level 1, A→B→C on level 2, one more stop each level
+up to level 5. After that the count goes up and down: fewer stops can still
+mean a harder route.
 
 ## The board
 
@@ -64,6 +66,19 @@ Every key lives in one table, `src/input/keymap.ts`.
 3. **Zigzag** — A–D. Three mirrors, one fixed, a trap that skips C.
 4. **Split Beam** — A–E. Splitter and block, both needed.
 5. **Hall of Mirrors** — A–F. Three wrong fixed mirrors, splitter, block.
+6. **Detour** — A–D. Three mirrors, three fixed, lots of walls.
+7. **Too Soon** — A–G. Four mirrors, three fixed.
+8. **Shortcut** — A–E. Two mirrors, splitter, block.
+9. **Crossroads** — A–F. Four mirrors, five fixed.
+10. **Head Start** — A–H. Three mirrors, splitter, block.
+11. **Side Door** — A–E. Two mirrors, splitter, block, four fixed.
+12. **Long Way Round** — A–G. Five mirrors, five fixed.
+13. **Tangle** — A–E. Three mirrors among seven fixed ones.
+14. **Photo Finish** — A–H. Three mirrors, splitter, block.
+15. **Last Light** — A–I. Four mirrors, splitter, block, six fixed.
+
+Every level from 6 on has exactly one or two solutions, and each needs the
+whole tray.
 
 Level complete: the frame flashes, the stops sparkle, then a box offers the next
 level. Progress (current level, levels done ★) is saved in the browser.
