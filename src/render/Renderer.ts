@@ -1,6 +1,7 @@
 import type { Puzzle } from '../sim/Puzzle';
 import type { Dir, PieceKind, Pos, Turn } from '../sim/types';
 import { BOARD_PX, CANVAS_H, CANVAS_W, CELL, MARGIN, TRAY_H, TRAY_Y, boardToPx, cellAt, cellOrigin, slotRect } from './layout';
+import { BOARD as PAL, PIECES, applyCssPalette } from './palette';
 import { drawText, textWidth } from './pixelFont';
 
 export interface DragView {
@@ -27,47 +28,6 @@ export interface ViewState {
   wonAt: number | null;
 }
 
-interface PiecePalette {
-  body: string;
-  light: string;
-  dark: string;
-  face: string;
-  shadow: string;
-}
-
-const PAL = {
-  bg: '#0d1020',
-  frame: '#3d4d80',
-  frameDark: '#070914',
-  floorA: '#2a3864',
-  floorB: '#27345e',
-  floorHi: '#34467a',
-  floorLo: '#1b2547',
-  wall: '#141a31',
-  wallMortar: '#0a0d1c',
-  wallHi: '#232c50',
-  outline: '#0a0c16',
-  beamGlow: '#2cff6e',
-  beamMid: '#8dffa9',
-  beamCore: '#f4fff6',
-  gold: '#ffd23f',
-  goldDim: '#8a7430',
-  goldPale: '#fff3b0',
-  red: '#ff4d6d',
-  redDark: '#6a1428',
-  plate: '#171e3c',
-  tray: '#131831',
-  slot: '#0e1226',
-  slotEdge: '#2c3558',
-};
-
-const PIECES: Record<'mirror' | 'mirrorFixed' | 'splitter' | 'block', PiecePalette> = {
-  mirror: { body: '#e8801f', light: '#ffb34f', dark: '#8f420b', face: '#fff0cc', shadow: '#a84d0c' },
-  mirrorFixed: { body: '#c9661a', light: '#ee9640', dark: '#6f3008', face: '#ffe2ad', shadow: '#843a08' },
-  splitter: { body: '#2a8aa3', light: '#7ae0f0', dark: '#134656', face: '#effdff', shadow: '#1b5f72' },
-  block: { body: '#7c859d', light: '#c1c8d9', dark: '#3e4458', face: '#5a627a', shadow: '#2e3345' },
-};
-
 const SHAKE_MS = 320;
 const NOZZLE: readonly (readonly [number, number])[] = [
   [6, 0],
@@ -86,6 +46,8 @@ export class Renderer {
     if (!ctx) throw new Error('no 2D canvas');
     this.ctx = ctx;
     ctx.imageSmoothingEnabled = false;
+    // Page CSS reads its colours from the same palette as the canvas.
+    applyCssPalette(canvas.ownerDocument.documentElement);
   }
 
   draw(v: ViewState, now: number): void {
@@ -229,16 +191,16 @@ export class Renderer {
 
   private source(x: number, y: number, dir: Dir, now: number): void {
     this.rect(x + 2, y + 2, 12, 12, PAL.outline);
-    this.rect(x + 3, y + 3, 10, 10, '#4a5270');
-    this.rect(x + 3, y + 3, 10, 1, '#8a93b0');
-    this.rect(x + 3, y + 3, 1, 10, '#8a93b0');
-    this.rect(x + 3, y + 12, 10, 1, '#262b40');
-    this.rect(x + 12, y + 3, 1, 10, '#262b40');
+    this.rect(x + 3, y + 3, 10, 10, PAL.laserBody);
+    this.rect(x + 3, y + 3, 10, 1, PAL.laserHi);
+    this.rect(x + 3, y + 3, 1, 10, PAL.laserHi);
+    this.rect(x + 3, y + 12, 10, 1, PAL.laserLo);
+    this.rect(x + 12, y + 3, 1, 10, PAL.laserLo);
     const [nx, ny] = NOZZLE[dir];
-    this.rect(x + nx, y + ny, 4, 4, '#262b40');
+    this.rect(x + nx, y + ny, 4, 4, PAL.laserLo);
     const hot = Math.floor(now / 180) % 2 === 0;
     this.rect(x + nx + 1, y + ny + 1, 2, 2, hot ? PAL.beamCore : PAL.beamGlow);
-    this.rect(x + 6, y + 6, 4, 4, '#1a1f30');
+    this.rect(x + 6, y + 6, 4, 4, PAL.laserLens);
     this.rect(x + 7, y + 7, 2, 2, hot ? PAL.beamGlow : PAL.beamMid);
   }
 
@@ -251,12 +213,12 @@ export class Renderer {
       case 'lit':
         ring = PAL.goldPale;
         fill = PAL.gold;
-        letter = '#3a2600';
+        letter = PAL.goldInk;
         break;
       case 'wrong':
         ring = blink ? PAL.red : PAL.redDark;
-        fill = '#3a0c1a';
-        letter = PAL.red;
+        fill = PAL.redFill;
+        letter = PAL.redInk;
         break;
       case 'next':
         ring = blink ? PAL.gold : PAL.goldDim;
@@ -266,7 +228,7 @@ export class Renderer {
       default:
         ring = PAL.goldDim;
         fill = PAL.plate;
-        letter = '#c9b46a';
+        letter = PAL.stopIdleInk;
     }
     if (state === 'lit') {
       this.ctx.globalAlpha = 0.35;
@@ -346,7 +308,7 @@ export class Renderer {
       this.rect(x + 2, r.y + 2, r.w - 4, r.h - 4, PAL.slot);
       // Number tag: the key that picks this slot.
       this.rect(x, r.y, 6, 8, picked ? PAL.gold : PAL.slotEdge);
-      drawText(this.ctx, String(i + 1), x + 1, r.y + 1, 1, picked ? '#1a1200' : PAL.goldPale);
+      drawText(this.ctx, String(i + 1), x + 1, r.y + 1, 1, picked ? PAL.goldInk : PAL.goldPale);
       this.ctx.globalAlpha = count > 0 ? 1 : 0.3;
       this.piece(x + 6, r.y + 5, kind, 0, false, count > 0 ? 1 : 0.3);
       this.ctx.globalAlpha = count > 0 ? 1 : 0.3;
