@@ -190,10 +190,8 @@ function fit(): void {
   const bottom = hint.getBoundingClientRect().height;
   const availW = window.innerWidth - 16;
   const availH = window.innerHeight - top - bottom - 28;
-  let s = Math.min(availW / CANVAS_W, availH / CANVAS_H);
-  // Whole-number scales keep every pixel square; below 2x, fill the phone instead.
-  if (s >= 2) s = Math.floor(s);
-  s = Math.max(1, s);
+  // Any scale stays sharp: the renderer sizes its backing store to these whole CSS pixels × devicePixelRatio.
+  const s = Math.max(1, Math.min(availW / CANVAS_W, availH / CANVAS_H));
   canvas.style.width = `${Math.floor(CANVAS_W * s)}px`;
   canvas.style.height = `${Math.floor(CANVAS_H * s)}px`;
 }
