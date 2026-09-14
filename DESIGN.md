@@ -7,23 +7,23 @@ mean a harder route.
 
 ## The board
 
-- 10×10 squares. Dark slate-blue tiles, 16-bit pixel look, all drawn in code.
-- **Laser**: a grey box with a green lens. It fires one way and never moves.
-- **Stops** A, B, C…: round yellow markers. The beam passes straight through.
-  - Lit gold: reached in the right order.
-  - Blinking: the one the light needs next.
-  - Red: the light got there too early.
-- **Walls**: dark bricks. They stop the beam.
+- 10×10 squares. Soft lavender rounded tiles, smooth modern look, all drawn in code.
+- **Laser**: a rounded grey box with a mint lens. It fires one way and never moves.
+- **Stops** A, B, C…: round badges with a letter. The beam passes straight through.
+  - Solid gold: reached in the right order.
+  - Pulsing gold ring: the one the light needs next.
+  - Red ring: the light got there too early.
+- **Walls**: smooth dark slabs. They stop the beam.
 
 ## Pieces
 
 | Piece | What it does | Turns |
 |---|---|---|
-| Mirror (orange) | Bounces the beam 90°. | `/` and `\` |
-| Splitter (blue glass) | Lets the beam through *and* bounces a copy. | `/` and `\` |
-| Block (grey) | Stops the beam. Useful to cut off a splitter branch. | — |
+| Mirror (peach) | Bounces the beam 90°. | `/` and `\` |
+| Splitter (sky-blue glass) | Lets the beam through *and* bounces a copy. | `/` and `\` |
+| Block (lavender-grey) | Stops the beam. Useful to cut off a splitter branch. | — |
 
-Some mirrors are **fixed** (darker orange, with rivets): part of the level. You
+Some mirrors are **fixed** (darker terracotta, with two pins): part of the level. You
 can turn them, never move or remove them. Every other piece comes from the
 level's **tray**, which holds a limited number of each.
 
@@ -89,7 +89,8 @@ TypeScript + Vite + Vitest, like the other games here. Canvas 2D, no three.js.
 
 - `src/sim/` — board, pieces, beam tracing, undo history. No drawing, no browser.
 - `src/content/` — the level list. Maps are 10 lines of text.
-- `src/render/` — draws everything at 176×216 and scales up with hard pixels.
+- `src/render/` — lays everything out on a 176×216 grid and draws it smoothly at
+  the screen's pixel density, scaled to fit.
 - `src/input/` — pointer events (mouse, pen, touch) and the key table.
 - `src/shell/` — the running level, question boxes, saved progress.
 
@@ -104,8 +105,7 @@ renderer, and plays every level's known solution to make sure it wins.
 
 ## Look
 
-Soft pastels on a dusk-lavender ground, in a clean modern style. This replaces
-the colours and pixel-art wording above.
+Soft pastels on a dusk-lavender ground, in a clean modern style. The details:
 
 - **Board**: rounded lavender tiles on a slightly darker base, so the gaps form a
   soft grid. Rounded corners and a gentle shadow. The rim turns gold on a win.
