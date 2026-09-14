@@ -101,3 +101,26 @@ renderer, and plays every level's known solution to make sure it wins.
 - Sound.
 - More piece types (coloured filters, one-way glass, portals).
 - Level select screen.
+
+## Look
+
+Soft pastels on a dusk-lavender ground, in a clean modern style. This replaces
+the colours and pixel-art wording above.
+
+- **Board**: rounded lavender tiles on a slightly darker base, so the gaps form a
+  soft grid. Rounded corners and a gentle shadow. The rim turns gold on a win.
+- **Walls**: smooth dark rounded slabs.
+- **Laser**: a rounded grey box with a glowing mint lens.
+- **Beam**: a smooth mint line with a white core, a soft glow and rounded bends.
+- **Stops**: round badges with a letter. Idle: dark with a dull gold ring. Next:
+  a gold ring that pulses outward. Lit: solid gold and glowing. Too early: a
+  red ring that glows.
+- **Mirror**: a peach rounded tile with a white diagonal bar.
+- **Fixed mirror**: darker terracotta, with a thin inner ring and two pins.
+- **Splitter**: see-through sky-blue glass with a dashed bar.
+- **Block**: a solid lavender-grey rounded cube.
+- **Page**: rounded pill buttons with icons, soft shadows, and hover and press
+  states. The font is Nunito, falling back to the system sans font.
+
+Every colour lives in `src/render/palette.ts`. The canvas draws at the
+screen's real pixel density, so edges stay sharp.
