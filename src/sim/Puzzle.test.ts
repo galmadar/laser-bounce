@@ -19,6 +19,7 @@ const LEVEL: LevelDef = {
     '..........',
   ],
   tray: { mirror: 2, block: 1 },
+  solution: { place: [{ at: { x: 7, y: 6 }, kind: 'mirror', turn: 0 }], turn: [{ at: { x: 7, y: 1 }, turn: 1 }] },
 };
 
 describe('Puzzle', () => {

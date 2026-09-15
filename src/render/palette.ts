@@ -26,6 +26,7 @@ const butter = { base: '#ffe08a', dim: '#b8a36a', pale: '#fff4c9', ink: '#4a3200
 const mint = { glow: '#9dffc4', mid: '#c9ffe0', core: '#ffffff' };
 const coral = { base: '#ff6b81', fill: '#4a1f35', ink: '#ff8a9a' };
 const peach = { base: '#ffc3a0', edge: '#c98a6d', ink: '#3a2433' };
+const orchid = { base: '#f4b8ff', glow: '#f4b8ff99' };
 
 export const BOARD = {
   boardBase: dusk.tileLo,
@@ -60,6 +61,11 @@ export const BOARD = {
   laserHi: '#c2bfd8',
   laserLo: '#4a4668',
   laserLens: dusk.night,
+  // "Show the solution": ghost pieces, angle hints and the dotted route.
+  solutionGhost: orchid.base,
+  solutionPath: orchid.base,
+  solutionPathGlow: orchid.glow,
+  solutionBadgeInk: dusk.plum,
 };
 
 export const PIECES: Record<'mirror' | 'mirrorFixed' | 'splitter' | 'block', PiecePalette> = {

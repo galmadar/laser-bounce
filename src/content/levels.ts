@@ -18,6 +18,14 @@ export const LEVELS: readonly LevelDef[] = [
       '..........',
     ],
     tray: { mirror: 1 },
+    solution: {
+      place: [
+        { at: { x: 7, y: 6 }, kind: 'mirror', turn: 0 },
+      ],
+      turn: [
+        { at: { x: 7, y: 1 }, turn: 1 },
+      ],
+    },
   },
   {
     id: 'b-before-c',
@@ -36,6 +44,15 @@ export const LEVELS: readonly LevelDef[] = [
       '..........',
     ],
     tray: { mirror: 2 },
+    solution: {
+      place: [
+        { at: { x: 3, y: 5 }, kind: 'mirror', turn: 0 },
+        { at: { x: 3, y: 0 }, kind: 'mirror', turn: 0 },
+      ],
+      turn: [
+        { at: { x: 8, y: 0 }, turn: 1 },
+      ],
+    },
   },
   {
     id: 'zigzag',
@@ -54,6 +71,16 @@ export const LEVELS: readonly LevelDef[] = [
       '.^........',
     ],
     tray: { mirror: 3 },
+    solution: {
+      place: [
+        { at: { x: 6, y: 4 }, kind: 'mirror', turn: 1 },
+        { at: { x: 6, y: 8 }, kind: 'mirror', turn: 1 },
+        { at: { x: 8, y: 8 }, kind: 'mirror', turn: 0 },
+      ],
+      turn: [
+        { at: { x: 1, y: 4 }, turn: 0 },
+      ],
+    },
   },
   {
     id: 'split-beam',
@@ -72,6 +99,16 @@ export const LEVELS: readonly LevelDef[] = [
       '..........',
     ],
     tray: { mirror: 1, splitter: 1, block: 1 },
+    solution: {
+      place: [
+        { at: { x: 4, y: 4 }, kind: 'splitter', turn: 0 },
+        { at: { x: 4, y: 1 }, kind: 'block', turn: 0 },
+        { at: { x: 8, y: 4 }, kind: 'mirror', turn: 0 },
+      ],
+      turn: [
+        { at: { x: 8, y: 0 }, turn: 1 },
+      ],
+    },
   },
   {
     id: 'hall-of-mirrors',
@@ -90,6 +127,19 @@ export const LEVELS: readonly LevelDef[] = [
       '.....F....',
     ],
     tray: { mirror: 3, splitter: 1, block: 1 },
+    solution: {
+      place: [
+        { at: { x: 5, y: 5 }, kind: 'splitter', turn: 1 },
+        { at: { x: 5, y: 8 }, kind: 'block', turn: 0 },
+        { at: { x: 8, y: 5 }, kind: 'mirror', turn: 0 },
+        { at: { x: 3, y: 9 }, kind: 'mirror', turn: 1 },
+      ],
+      turn: [
+        { at: { x: 0, y: 5 }, turn: 1 },
+        { at: { x: 8, y: 1 }, turn: 1 },
+        { at: { x: 3, y: 1 }, turn: 0 },
+      ],
+    },
   },
   {
     id: 'detour',
@@ -108,6 +158,16 @@ export const LEVELS: readonly LevelDef[] = [
       '#....^#...',
     ],
     tray: { mirror: 3 },
+    solution: {
+      place: [
+        { at: { x: 3, y: 2 }, kind: 'mirror', turn: 0 },
+        { at: { x: 5, y: 4 }, kind: 'mirror', turn: 1 },
+        { at: { x: 7, y: 7 }, kind: 'mirror', turn: 1 },
+      ],
+      turn: [
+        { at: { x: 3, y: 4 }, turn: 1 },
+      ],
+    },
   },
   {
     id: 'too-soon',
@@ -126,6 +186,18 @@ export const LEVELS: readonly LevelDef[] = [
       '.\\........',
     ],
     tray: { mirror: 4 },
+    solution: {
+      place: [
+        { at: { x: 2, y: 1 }, kind: 'mirror', turn: 0 },
+        { at: { x: 6, y: 1 }, kind: 'mirror', turn: 1 },
+        { at: { x: 2, y: 6 }, kind: 'mirror', turn: 0 },
+        { at: { x: 4, y: 8 }, kind: 'mirror', turn: 1 },
+      ],
+      turn: [
+        { at: { x: 4, y: 6 }, turn: 0 },
+        { at: { x: 6, y: 6 }, turn: 0 },
+      ],
+    },
   },
   {
     id: 'shortcut',
@@ -144,6 +216,15 @@ export const LEVELS: readonly LevelDef[] = [
       '..........',
     ],
     tray: { mirror: 2, splitter: 1, block: 1 },
+    solution: {
+      place: [
+        { at: { x: 4, y: 3 }, kind: 'mirror', turn: 0 },
+        { at: { x: 7, y: 4 }, kind: 'block', turn: 0 },
+        { at: { x: 4, y: 7 }, kind: 'mirror', turn: 1 },
+        { at: { x: 7, y: 7 }, kind: 'splitter', turn: 1 },
+      ],
+      turn: [],
+    },
   },
   {
     id: 'crossroads',
@@ -162,6 +243,18 @@ export const LEVELS: readonly LevelDef[] = [
       '.........#',
     ],
     tray: { mirror: 4 },
+    solution: {
+      place: [
+        { at: { x: 9, y: 2 }, kind: 'mirror', turn: 1 },
+        { at: { x: 2, y: 5 }, kind: 'mirror', turn: 0 },
+        { at: { x: 5, y: 5 }, kind: 'mirror', turn: 0 },
+        { at: { x: 7, y: 5 }, kind: 'mirror', turn: 1 },
+      ],
+      turn: [
+        { at: { x: 5, y: 2 }, turn: 0 },
+        { at: { x: 9, y: 5 }, turn: 0 },
+      ],
+    },
   },
   {
     id: 'head-start',
@@ -180,6 +273,19 @@ export const LEVELS: readonly LevelDef[] = [
       '#.....^...',
     ],
     tray: { mirror: 3, splitter: 1, block: 1 },
+    solution: {
+      place: [
+        { at: { x: 7, y: 0 }, kind: 'mirror', turn: 0 },
+        { at: { x: 9, y: 0 }, kind: 'mirror', turn: 1 },
+        { at: { x: 9, y: 4 }, kind: 'mirror', turn: 0 },
+        { at: { x: 6, y: 5 }, kind: 'block', turn: 0 },
+        { at: { x: 6, y: 8 }, kind: 'splitter', turn: 0 },
+      ],
+      turn: [
+        { at: { x: 7, y: 4 }, turn: 0 },
+        { at: { x: 7, y: 8 }, turn: 0 },
+      ],
+    },
   },
   {
     id: 'side-door',
@@ -198,6 +304,18 @@ export const LEVELS: readonly LevelDef[] = [
       '.....#....',
     ],
     tray: { mirror: 2, splitter: 1, block: 1 },
+    solution: {
+      place: [
+        { at: { x: 6, y: 0 }, kind: 'mirror', turn: 0 },
+        { at: { x: 7, y: 1 }, kind: 'block', turn: 0 },
+        { at: { x: 7, y: 4 }, kind: 'splitter', turn: 0 },
+        { at: { x: 9, y: 4 }, kind: 'mirror', turn: 0 },
+      ],
+      turn: [
+        { at: { x: 6, y: 3 }, turn: 1 },
+        { at: { x: 9, y: 3 }, turn: 1 },
+      ],
+    },
   },
   {
     id: 'long-way-round',
@@ -216,6 +334,18 @@ export const LEVELS: readonly LevelDef[] = [
       '..........',
     ],
     tray: { mirror: 5 },
+    solution: {
+      place: [
+        { at: { x: 8, y: 0 }, kind: 'mirror', turn: 0 },
+        { at: { x: 0, y: 2 }, kind: 'mirror', turn: 0 },
+        { at: { x: 3, y: 3 }, kind: 'mirror', turn: 0 },
+        { at: { x: 0, y: 4 }, kind: 'mirror', turn: 1 },
+        { at: { x: 5, y: 4 }, kind: 'mirror', turn: 1 },
+      ],
+      turn: [
+        { at: { x: 3, y: 4 }, turn: 0 },
+      ],
+    },
   },
   {
     id: 'tangle',
@@ -234,6 +364,17 @@ export const LEVELS: readonly LevelDef[] = [
       '.#........',
     ],
     tray: { mirror: 3 },
+    solution: {
+      place: [
+        { at: { x: 2, y: 1 }, kind: 'mirror', turn: 0 },
+        { at: { x: 5, y: 1 }, kind: 'mirror', turn: 1 },
+        { at: { x: 5, y: 2 }, kind: 'mirror', turn: 1 },
+      ],
+      turn: [
+        { at: { x: 6, y: 5 }, turn: 1 },
+        { at: { x: 6, y: 6 }, turn: 0 },
+      ],
+    },
   },
   {
     id: 'photo-finish',
@@ -252,6 +393,18 @@ export const LEVELS: readonly LevelDef[] = [
       '..#.G.F...',
     ],
     tray: { mirror: 3, splitter: 1, block: 1 },
+    solution: {
+      place: [
+        { at: { x: 2, y: 3 }, kind: 'splitter', turn: 1 },
+        { at: { x: 7, y: 3 }, kind: 'mirror', turn: 1 },
+        { at: { x: 2, y: 7 }, kind: 'block', turn: 0 },
+        { at: { x: 3, y: 9 }, kind: 'mirror', turn: 1 },
+        { at: { x: 7, y: 9 }, kind: 'mirror', turn: 0 },
+      ],
+      turn: [
+        { at: { x: 3, y: 8 }, turn: 1 },
+      ],
+    },
   },
   {
     id: 'last-light',
@@ -270,5 +423,19 @@ export const LEVELS: readonly LevelDef[] = [
       '...^..D...',
     ],
     tray: { mirror: 4, splitter: 1, block: 1 },
+    solution: {
+      place: [
+        { at: { x: 0, y: 5 }, kind: 'mirror', turn: 0 },
+        { at: { x: 3, y: 6 }, kind: 'mirror', turn: 0 },
+        { at: { x: 3, y: 8 }, kind: 'splitter', turn: 0 },
+        { at: { x: 6, y: 8 }, kind: 'block', turn: 0 },
+        { at: { x: 4, y: 9 }, kind: 'mirror', turn: 1 },
+        { at: { x: 7, y: 9 }, kind: 'mirror', turn: 0 },
+      ],
+      turn: [
+        { at: { x: 3, y: 5 }, turn: 0 },
+        { at: { x: 7, y: 6 }, turn: 1 },
+      ],
+    },
   },
 ];

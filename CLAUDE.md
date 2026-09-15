@@ -18,5 +18,5 @@ See `DESIGN.md`. A laser always on, mirrors to turn and place, stops A, B, C…
 that the light must reach in order. 10×10 board, drawn with Canvas 2D.
 
 `src/sim/` and `src/content/` must never import the DOM, canvas or renderer
-code. `npm test` fails if they do. Every level needs a known solution in
-`src/content/levels.test.ts`.
+code. `npm test` fails if they do. Every level needs a known solution in its
+`solution` field in `src/content/levels.ts`; the tests play it.

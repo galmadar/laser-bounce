@@ -1,4 +1,5 @@
 import type { Puzzle } from '../sim/Puzzle';
+import type { SolutionOverlay } from '../sim/solution';
 import type { Dir, PieceKind, Pos, Turn } from '../sim/types';
 import { BOARD_PX, CANVAS_H, CANVAS_W, CELL, MARGIN, TRAY_H, TRAY_Y, boardToPx, cellAt, cellOrigin, slotRect } from './layout';
 import { BOARD as PAL, PIECES, applyCssPalette } from './palette';
@@ -25,6 +26,7 @@ export interface ViewState {
   drag: DragView | null;
   shake: Shake | null;
   wonAt: number | null;
+  solution: SolutionOverlay | null;
 }
 
 const SHAKE_MS = 320;
@@ -89,6 +91,8 @@ export class Renderer {
         this.piece(o.x + dx, o.y, piece.kind, piece.turn, piece.fixed, lifted ? 0.35 : 1);
       }
     }
+
+    if (v.solution) this.solution(v.solution, now);
 
     const next = beam.lit.indexOf(false);
     for (let y = 0; y < p.height; y++) {
@@ -385,6 +389,78 @@ export class Renderer {
     this.circle(px, py, r, PAL.beamMid);
     this.noShadow();
     this.circle(px, py, r * 0.5, PAL.beamCore);
+  }
+
+  /** Faint pieces where the solution puts them, angle hints on fixed mirrors, and the solved route as flowing dots. */
+  private solution(s: SolutionOverlay, now: number): void {
+    const { ctx } = this;
+    const breathe = 0.5 + 0.5 * Math.sin(now / 400);
+
+    for (const pl of s.place) {
+      const o = cellOrigin(pl.at.x, pl.at.y);
+      this.piece(o.x, o.y, pl.kind, pl.turn, false, 0.38 + 0.12 * breathe);
+      ctx.save();
+      ctx.strokeStyle = PAL.solutionGhost;
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([1.6, 1.2]);
+      ctx.beginPath();
+      ctx.roundRect(o.x + 1, o.y + 1, CELL - 2, CELL - 2, 3.5);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    for (const t of s.turn) {
+      const o = cellOrigin(t.at.x, t.at.y);
+      const [ax, ay, bx, by] = t.turn === 0 ? [3.5, 12.5, 12.5, 3.5] : [3.5, 3.5, 12.5, 12.5];
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = 0.7 + 0.3 * breathe;
+      ctx.strokeStyle = PAL.solutionGhost;
+      ctx.lineWidth = 1.6;
+      ctx.setLineDash([1.8, 1.4]);
+      this.line(o.x + ax, o.y + ay, o.x + bx, o.y + by);
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+      // Corner badge with a turn arrow: "turn this one".
+      const cx = o.x + 13;
+      const cy = o.y + 3;
+      const r = 1.5;
+      const end = Math.PI * 1.3;
+      this.circle(cx, cy, 2.9, PAL.solutionGhost);
+      ctx.strokeStyle = PAL.solutionBadgeInk;
+      ctx.lineWidth = 0.7;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, -Math.PI * 0.2, end);
+      ctx.stroke();
+      const ex = cx + Math.cos(end) * r;
+      const ey = cy + Math.sin(end) * r;
+      const [tx, ty] = [-Math.sin(end), Math.cos(end)];
+      const [nx, ny] = [Math.cos(end), Math.sin(end)];
+      ctx.fillStyle = PAL.solutionBadgeInk;
+      ctx.beginPath();
+      ctx.moveTo(ex + tx * 1, ey + ty * 1);
+      ctx.lineTo(ex + nx * 0.8, ey + ny * 0.8);
+      ctx.lineTo(ex - nx * 0.8, ey - ny * 0.8);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    if (s.path.length === 0) return;
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = PAL.solutionPath;
+    ctx.lineWidth = 1.5;
+    // Round-capped tiny dashes are dots; the offset makes them flow away from the laser.
+    ctx.setLineDash([0.01, 3.2]);
+    ctx.lineDashOffset = -now / 80;
+    this.shadow(PAL.solutionPathGlow, 2);
+    ctx.beginPath();
+    for (const seg of s.path) {
+      ctx.moveTo(boardToPx(seg.x1), boardToPx(seg.y1));
+      ctx.lineTo(boardToPx(seg.x2), boardToPx(seg.y2));
+    }
+    ctx.stroke();
+    ctx.restore();
   }
 
   private ghost(v: ViewState): void {

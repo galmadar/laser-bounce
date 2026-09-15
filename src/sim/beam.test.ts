@@ -5,7 +5,7 @@ import { Puzzle } from './Puzzle';
 import type { LevelDef } from './types';
 
 function level(map: string[], tray: LevelDef['tray'] = {}): LevelDef {
-  return { id: 'test', name: 'Test', hint: '', map, tray };
+  return { id: 'test', name: 'Test', hint: '', map, tray, solution: { place: [], turn: [] } };
 }
 
 const EMPTY = '..........';

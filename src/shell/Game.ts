@@ -1,6 +1,7 @@
 import type { DragSource, PointerHandlers } from '../input/PointerInput';
 import type { DragView, Shake, ViewState } from '../render/Renderer';
 import { Puzzle } from '../sim/Puzzle';
+import { solutionOverlay, type SolutionOverlay } from '../sim/solution';
 import type { LevelDef, PieceKind, Pos } from '../sim/types';
 
 export type GameEvent = 'changed' | 'won' | 'no';
@@ -14,12 +15,38 @@ export class Game implements ViewState, PointerHandlers {
   shake: Shake | null = null;
   wonAt: number | null = null;
   locked = false;
+  /** The solution overlay is up. It stays while the player keeps playing. */
+  showSolution = false;
 
   constructor(
     level: LevelDef,
     private readonly emit: (e: GameEvent) => void,
   ) {
     this.puzzle = new Puzzle(level);
+  }
+
+  get solution(): SolutionOverlay | null {
+    return this.showSolution ? solutionOverlay(this.puzzle) : null;
+  }
+
+  setSolution(show: boolean): void {
+    this.showSolution = show;
+    this.emit('changed');
+  }
+
+  /** Puts the whole solution on the board as one undo step. */
+  applySolution(): void {
+    this.showSolution = false;
+    this.picked = null;
+    this.drag = null;
+    if (this.puzzle.applySolution()) this.changed();
+    else this.emit('changed');
+  }
+
+  /** Won with the overlay up, or by "solve it for me". */
+  wonWithHelp(): boolean {
+    const h = this.puzzle.history();
+    return this.showSolution || h[h.length - 1]?.type === 'solution';
   }
 
   enabled(): boolean {

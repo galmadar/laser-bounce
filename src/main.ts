@@ -12,6 +12,7 @@ const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as 
 const canvas = $<HTMLCanvasElement>('board');
 const levelLabel = $('level-label');
 const hint = $('hint');
+const solutionBar = $('solution-bar');
 const help = $('help');
 const buttons = {
   prev: $<HTMLButtonElement>('btn-prev'),
@@ -20,6 +21,9 @@ const buttons = {
   redo: $<HTMLButtonElement>('btn-redo'),
   restart: $<HTMLButtonElement>('btn-restart'),
   help: $<HTMLButtonElement>('btn-help'),
+  solution: $<HTMLButtonElement>('btn-solution'),
+  solutionHide: $<HTMLButtonElement>('btn-solution-hide'),
+  solutionApply: $<HTMLButtonElement>('btn-solution-apply'),
 };
 
 const renderer = new Renderer(canvas);
@@ -46,7 +50,7 @@ function loadLevel(index: number): void {
 function onGameEvent(g: Game, e: GameEvent): void {
   if (g !== game) return;
   if (e === 'won') {
-    progress.markSolved(g.puzzle.level.id);
+    progress.markSolved(g.puzzle.level.id, g.wonWithHelp());
     if (winTimer !== null) window.clearTimeout(winTimer);
     // Let the beam flash first, then say so.
     winTimer = window.setTimeout(() => {
@@ -92,6 +96,18 @@ function askGoTo(): void {
   });
 }
 
+/** Hiding needs no question; showing is a spoiler, so it asks first. */
+function toggleSolution(): void {
+  if (game.showSolution) return game.setSolution(false);
+  modals.open({
+    title: 'Show the solution?',
+    body: 'You will see where every piece goes. Your own pieces stay where they are.',
+    ok: { label: 'Show', run: () => game.setSolution(true) },
+    extra: { label: 'Solve it for me', run: () => game.applySolution() },
+    cancel: { label: 'Not now' },
+  });
+}
+
 function toggleHelp(show = help.hidden): void {
   help.hidden = !show;
   buttons.help.classList.toggle('on', show);
@@ -102,7 +118,12 @@ function run(action: KeyAction): void {
     case 'pickSlot':
       return game.pick(action.slot - 1);
     case 'dropPick':
-      if (!help.hidden) toggleHelp(false);
+      // One thing per press: the card, then the picked piece, then the solution.
+      if (!help.hidden) {
+        toggleHelp(false);
+        return game.dropPick();
+      }
+      if (game.picked === null && game.showSolution) return game.setSolution(false);
       return game.dropPick();
     case 'restart':
       return game.restart();
@@ -118,6 +139,8 @@ function run(action: KeyAction): void {
       return game.redo();
     case 'toggleHelp':
       return toggleHelp();
+    case 'toggleSolution':
+      return toggleSolution();
   }
 }
 
@@ -156,12 +179,22 @@ buttons.undo.addEventListener('click', () => game.undo());
 buttons.redo.addEventListener('click', () => game.redo());
 buttons.restart.addEventListener('click', () => game.restart());
 buttons.help.addEventListener('click', () => toggleHelp());
+buttons.solution.addEventListener('click', () => toggleSolution());
+buttons.solutionHide.addEventListener('click', () => game.setSolution(false));
+buttons.solutionApply.addEventListener('click', () => game.applySolution());
 $('help-close').addEventListener('click', () => toggleHelp(false));
 
 function updateHud(): void {
   const lvl = LEVELS[levelIndex];
-  levelLabel.textContent = `Level ${levelIndex + 1}/${LEVELS.length} · ${lvl.name}${progress.isSolved(lvl.id) ? ' ★' : ''}`;
+  const solved = progress.solvedState(lvl.id);
+  const star = solved === 'self' ? ' ★' : solved === 'helped' ? ' ☆' : '';
+  levelLabel.textContent = `Level ${levelIndex + 1}/${LEVELS.length} · ${lvl.name}${star}`;
+  levelLabel.title = solved === 'helped' ? 'Solved with help' : solved === 'self' ? 'Solved' : '';
   hint.textContent = lvl.hint;
+  hint.hidden = game.showSolution;
+  solutionBar.hidden = !game.showSolution;
+  buttons.solution.classList.toggle('on', game.showSolution);
+  buttons.solution.setAttribute('aria-pressed', String(game.showSolution));
   buttons.prev.disabled = levelIndex === 0;
   buttons.next.disabled = levelIndex === LEVELS.length - 1;
   buttons.undo.disabled = !game.puzzle.canUndo;
@@ -187,7 +220,7 @@ function buildHelp(): void {
 
 function fit(): void {
   const top = $('bar').getBoundingClientRect().height;
-  const bottom = hint.getBoundingClientRect().height;
+  const bottom = $('below').getBoundingClientRect().height;
   const availW = window.innerWidth - 16;
   const availH = window.innerHeight - top - bottom - 28;
   // Any scale stays sharp: the renderer sizes its backing store to these whole CSS pixels × devicePixelRatio.
@@ -222,6 +255,9 @@ if (import.meta.env.DEV) {
       won: p.won,
       modal: document.querySelector('.modal h2')?.textContent ?? null,
       help: !help.hidden,
+      solution: game.showSolution,
+      history: p.history().map((m) => m.type),
+      solved: progress.solvedState(p.level.id),
     });
   });
 }

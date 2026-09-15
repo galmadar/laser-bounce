@@ -1,5 +1,6 @@
 import { traceBeam, type BeamResult } from './beam';
 import { parseLevel, type Board } from './board';
+import { solutionMoves } from './solution';
 import { PIECE_KINDS, type LevelDef, type Piece, type PieceKind, type Pos, type Turn, type TrayCounts } from './types';
 
 /** Everything the player can do to a board, as plain data so it can be undone, redone and tested. */
@@ -7,7 +8,9 @@ export type Move =
   | { type: 'place'; at: Pos; kind: PieceKind; turn: Turn }
   | { type: 'turn'; at: Pos }
   | { type: 'remove'; at: Pos; kind: PieceKind; turn: Turn }
-  | { type: 'move'; from: Pos; to: Pos };
+  | { type: 'move'; from: Pos; to: Pos }
+  /** "Solve it for me": many moves, undone as one. */
+  | { type: 'solution'; moves: Move[] };
 
 export type RemoveResult = 'removed' | 'fixed' | 'empty';
 
@@ -96,6 +99,13 @@ export class Puzzle {
     return this.commit({ type: 'move', from, to });
   }
 
+  /** Puts the level's known solution on the board as a single undo step. False when it is already there. */
+  applySolution(): boolean {
+    const moves = solutionMoves(this);
+    if (moves.length === 0) return false;
+    return this.commit({ type: 'solution', moves });
+  }
+
   get canUndo(): boolean {
     return this.undoStack.length > 0;
   }
@@ -162,6 +172,9 @@ export class Puzzle {
         pieces[idx(move.to)] = pieces[idx(move.from)];
         pieces[idx(move.from)] = null;
         break;
+      case 'solution':
+        for (const m of move.moves) this.apply(m);
+        break;
     }
     this.cached = null;
   }
@@ -177,5 +190,7 @@ function inverse(move: Move): Move {
       return move;
     case 'move':
       return { type: 'move', from: move.to, to: move.from };
+    case 'solution':
+      return { type: 'solution', moves: move.moves.map(inverse).reverse() };
   }
 }

@@ -1,119 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { targetCount, parseLevel } from '../sim/board';
 import { Puzzle, type Move } from '../sim/Puzzle';
+import type { LevelDef } from '../sim/types';
 import { LEVELS } from './levels';
 
-/** One known way through each level, in the order a player could do it. */
-const SOLUTIONS: Record<string, Move[]> = {
-  'first-bounce': [
-    { type: 'turn', at: { x: 7, y: 1 } },
-    { type: 'place', at: { x: 7, y: 6 }, kind: 'mirror', turn: 0 },
-  ],
-  'b-before-c': [
-    { type: 'place', at: { x: 3, y: 5 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 3, y: 0 }, kind: 'mirror', turn: 0 },
-    { type: 'turn', at: { x: 8, y: 0 } },
-  ],
-  zigzag: [
-    { type: 'turn', at: { x: 1, y: 4 } },
-    { type: 'place', at: { x: 6, y: 4 }, kind: 'mirror', turn: 1 },
-    { type: 'place', at: { x: 6, y: 8 }, kind: 'mirror', turn: 1 },
-    { type: 'place', at: { x: 8, y: 8 }, kind: 'mirror', turn: 0 },
-  ],
-  'split-beam': [
-    { type: 'place', at: { x: 4, y: 4 }, kind: 'splitter', turn: 0 },
-    { type: 'place', at: { x: 4, y: 1 }, kind: 'block', turn: 0 },
-    { type: 'place', at: { x: 8, y: 4 }, kind: 'mirror', turn: 0 },
-    { type: 'turn', at: { x: 8, y: 0 } },
-  ],
-  'hall-of-mirrors': [
-    { type: 'turn', at: { x: 0, y: 5 } },
-    { type: 'place', at: { x: 5, y: 5 }, kind: 'splitter', turn: 1 },
-    { type: 'place', at: { x: 5, y: 8 }, kind: 'block', turn: 0 },
-    { type: 'place', at: { x: 8, y: 5 }, kind: 'mirror', turn: 0 },
-    { type: 'turn', at: { x: 8, y: 1 } },
-    { type: 'turn', at: { x: 3, y: 1 } },
-    { type: 'place', at: { x: 3, y: 9 }, kind: 'mirror', turn: 1 },
-  ],
-  detour: [
-    { type: 'place', at: { x: 3, y: 2 }, kind: 'mirror', turn: 0 },
-    { type: 'turn', at: { x: 3, y: 4 } },
-    { type: 'place', at: { x: 5, y: 4 }, kind: 'mirror', turn: 1 },
-    { type: 'place', at: { x: 7, y: 7 }, kind: 'mirror', turn: 1 },
-  ],
-  'too-soon': [
-    { type: 'place', at: { x: 2, y: 1 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 6, y: 1 }, kind: 'mirror', turn: 1 },
-    { type: 'place', at: { x: 2, y: 6 }, kind: 'mirror', turn: 0 },
-    { type: 'turn', at: { x: 4, y: 6 } },
-    { type: 'turn', at: { x: 6, y: 6 } },
-    { type: 'place', at: { x: 4, y: 8 }, kind: 'mirror', turn: 1 },
-  ],
-  crossroads: [
-    { type: 'turn', at: { x: 5, y: 2 } },
-    { type: 'place', at: { x: 9, y: 2 }, kind: 'mirror', turn: 1 },
-    { type: 'place', at: { x: 2, y: 5 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 5, y: 5 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 7, y: 5 }, kind: 'mirror', turn: 1 },
-    { type: 'turn', at: { x: 9, y: 5 } },
-  ],
-  'side-door': [
-    { type: 'place', at: { x: 6, y: 0 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 7, y: 1 }, kind: 'block', turn: 0 },
-    { type: 'turn', at: { x: 6, y: 3 } },
-    { type: 'turn', at: { x: 9, y: 3 } },
-    { type: 'place', at: { x: 7, y: 4 }, kind: 'splitter', turn: 0 },
-    { type: 'place', at: { x: 9, y: 4 }, kind: 'mirror', turn: 0 },
-  ],
-  'long-way-round': [
-    { type: 'place', at: { x: 8, y: 0 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 0, y: 2 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 3, y: 3 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 0, y: 4 }, kind: 'mirror', turn: 1 },
-    { type: 'turn', at: { x: 3, y: 4 } },
-    { type: 'place', at: { x: 5, y: 4 }, kind: 'mirror', turn: 1 },
-  ],
-  shortcut: [
-    { type: 'place', at: { x: 4, y: 3 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 7, y: 4 }, kind: 'block', turn: 0 },
-    { type: 'place', at: { x: 4, y: 7 }, kind: 'mirror', turn: 1 },
-    { type: 'place', at: { x: 7, y: 7 }, kind: 'splitter', turn: 1 },
-  ],
-  'head-start': [
-    { type: 'place', at: { x: 7, y: 0 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 9, y: 0 }, kind: 'mirror', turn: 1 },
-    { type: 'turn', at: { x: 7, y: 4 } },
-    { type: 'place', at: { x: 9, y: 4 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 6, y: 5 }, kind: 'block', turn: 0 },
-    { type: 'place', at: { x: 6, y: 8 }, kind: 'splitter', turn: 0 },
-    { type: 'turn', at: { x: 7, y: 8 } },
-  ],
-  tangle: [
-    { type: 'place', at: { x: 2, y: 1 }, kind: 'mirror', turn: 0 },
-    { type: 'place', at: { x: 5, y: 1 }, kind: 'mirror', turn: 1 },
-    { type: 'place', at: { x: 5, y: 2 }, kind: 'mirror', turn: 1 },
-    { type: 'turn', at: { x: 6, y: 5 } },
-    { type: 'turn', at: { x: 6, y: 6 } },
-  ],
-  'photo-finish': [
-    { type: 'place', at: { x: 2, y: 3 }, kind: 'splitter', turn: 1 },
-    { type: 'place', at: { x: 7, y: 3 }, kind: 'mirror', turn: 1 },
-    { type: 'place', at: { x: 2, y: 7 }, kind: 'block', turn: 0 },
-    { type: 'turn', at: { x: 3, y: 8 } },
-    { type: 'place', at: { x: 3, y: 9 }, kind: 'mirror', turn: 1 },
-    { type: 'place', at: { x: 7, y: 9 }, kind: 'mirror', turn: 0 },
-  ],
-  'last-light': [
-    { type: 'place', at: { x: 0, y: 5 }, kind: 'mirror', turn: 0 },
-    { type: 'turn', at: { x: 3, y: 5 } },
-    { type: 'place', at: { x: 3, y: 6 }, kind: 'mirror', turn: 0 },
-    { type: 'turn', at: { x: 7, y: 6 } },
-    { type: 'place', at: { x: 3, y: 8 }, kind: 'splitter', turn: 0 },
-    { type: 'place', at: { x: 6, y: 8 }, kind: 'block', turn: 0 },
-    { type: 'place', at: { x: 4, y: 9 }, kind: 'mirror', turn: 1 },
-    { type: 'place', at: { x: 7, y: 9 }, kind: 'mirror', turn: 0 },
-  ],
-};
+/** The level's known solution, as moves a player could make. */
+function solutionAsMoves(lvl: LevelDef): Move[] {
+  return [
+    ...lvl.solution.turn.map((t): Move => ({ type: 'turn', at: t.at })),
+    ...lvl.solution.place.map((pl): Move => ({ type: 'place', at: pl.at, kind: pl.kind, turn: pl.turn })),
+  ];
+}
 
 function play(p: Puzzle, move: Move): boolean {
   switch (move.type) {
@@ -125,6 +22,8 @@ function play(p: Puzzle, move: Move): boolean {
       return p.remove(move.at.x, move.at.y) === 'removed';
     case 'move':
       return p.move(move.from, move.to);
+    case 'solution':
+      return move.moves.every((m) => play(p, m));
   }
 }
 
@@ -150,15 +49,22 @@ describe('level registry', () => {
 });
 
 describe.each(LEVELS.map((l) => [l.id, l] as const))('%s', (id, lvl) => {
+  it('lists only fixed mirrors that need a different angle', () => {
+    const start = new Puzzle(lvl);
+    for (const t of lvl.solution.turn) {
+      const pc = start.pieceAt(t.at.x, t.at.y);
+      expect(pc?.fixed, `${id}: ${JSON.stringify(t.at)}`).toBe(true);
+      expect(pc?.turn).not.toBe(t.turn);
+    }
+  });
+
   it('is not already won when it starts', () => {
     expect(new Puzzle(lvl).won).toBe(false);
   });
 
-  it('is won by its known solution, using only what the tray holds', () => {
-    const solution = SOLUTIONS[id];
-    expect(solution, `no known solution for ${id}`).toBeDefined();
+  it('is won by its known solution, played by hand, using only what the tray holds', () => {
     const p = new Puzzle(lvl);
-    for (const move of solution) expect(play(p, move), JSON.stringify(move)).toBe(true);
+    for (const move of solutionAsMoves(lvl)) expect(play(p, move), `${id}: ${JSON.stringify(move)}`).toBe(true);
     const beam = p.beam();
     expect(beam.won).toBe(true);
     expect(beam.looped).toBe(false);

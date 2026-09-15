@@ -53,11 +53,32 @@ direction it already travelled is stopped there, so loops can't run forever.
 | Undo / redo | ↶ ↷ buttons | ↶ ↷ buttons | Ctrl/Cmd Z, Ctrl/Cmd Shift Z |
 | Next / previous level | ▶ ◀ buttons (asks first) | same | N ] / P [ |
 | Go to a level | — | — | Ctrl/Cmd G |
+| See the solution | bulb button (asks first) | same | S |
+| Hide the solution | bulb button, or Hide | same | S, or Esc |
 | Controls card | ? button | ? button | ? or H |
 
 Fixed pieces give a little "no" shake when you try to move or remove them.
 While a question box is open, only Enter (yes) and Esc (no) do anything.
 Every key lives in one table, `src/input/keymap.ts`.
+
+## Show the solution
+
+The bulb button (or S) asks "Show the solution?" first, since it's a spoiler.
+Enter shows it, Esc cancels, and a third choice, **Solve it for me**, puts it in
+straight away.
+
+- **Showing it** draws faint orchid ghosts on the board and leaves your pieces
+  alone: each tray piece at its square and angle, a dashed bar with a turn badge
+  on each fixed mirror at the wrong angle, and the solved route as dots flowing
+  away from the laser. Ghosts disappear as you match them. It stays up while you
+  play; S, the bulb, Hide, or Esc (after putting down a picked piece) hides it.
+- **Solve it for me** (in the question box, or under the board while the
+  solution shows) clears your pieces, sets the fixed mirrors and places the tray
+  pieces, all as one undo step, and wins the level. One undo brings your own
+  layout back.
+- A level won that way, or won with the solution showing, is saved as *solved
+  with help*: a hollow ☆ by its name instead of ★. Winning it alone later turns
+  it into ★.
 
 ## Levels
 
@@ -81,14 +102,16 @@ Every level from 6 on has exactly one or two solutions, and each needs the
 whole tray.
 
 Level complete: the frame flashes, the stops sparkle, then a box offers the next
-level. Progress (current level, levels done ★) is saved in the browser.
+level. Progress (current level, levels done ★, done with help ☆) is saved in the browser.
 
 ## How it's built
 
 TypeScript + Vite + Vitest, like the other games here. Canvas 2D, no three.js.
 
-- `src/sim/` — board, pieces, beam tracing, undo history. No drawing, no browser.
-- `src/content/` — the level list. Maps are 10 lines of text.
+- `src/sim/` — board, pieces, beam tracing, undo history, the solution overlay
+  and "solve it for me". No drawing, no browser.
+- `src/content/` — the level list. Maps are 10 lines of text; each level carries
+  its known `solution` (tray placements and fixed-mirror angles).
 - `src/render/` — lays everything out on a 176×216 grid and draws it smoothly at
   the screen's pixel density, scaled to fit.
 - `src/input/` — pointer events (mouse, pen, touch) and the key table.

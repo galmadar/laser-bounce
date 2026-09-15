@@ -32,6 +32,25 @@ export interface Pos {
 
 export type TrayCounts = Record<PieceKind, number>;
 
+/** A tray piece where the solution puts it. */
+export interface Placement {
+  at: Pos;
+  kind: PieceKind;
+  turn: Turn;
+}
+
+/** A fixed mirror and the angle the solution needs it at. */
+export interface FixedTurn {
+  at: Pos;
+  turn: Turn;
+}
+
+/** One known way through a level. Fixed mirrors not listed stay as the map draws them. */
+export interface Solution {
+  place: readonly Placement[];
+  turn: readonly FixedTurn[];
+}
+
 export interface LevelDef {
   id: string;
   name: string;
@@ -43,4 +62,5 @@ export interface LevelDef {
    */
   map: readonly string[];
   tray: Partial<TrayCounts>;
+  solution: Solution;
 }

@@ -33,7 +33,7 @@
       }
       #bar {
         width: 100%;
-        max-width: 720px;
+        max-width: 780px;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -99,7 +99,11 @@
         touch-action: none;
         -webkit-touch-callout: none;
       }
-      #hint { margin: 6px 16px 0; max-width: 520px; text-align: center; color: var(--dim); font-size: 14px; font-weight: 700; min-height: 2.8em; }
+      #below { margin: 6px 16px 0; max-width: 520px; min-height: 2.8em; font-size: 14px; }
+      #hint { margin: 0; text-align: center; color: var(--dim); font-weight: 700; }
+      #solution-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 8px; color: var(--dim); font-weight: 800; }
+      #solution-bar[hidden] { display: none; }
+      #solution-bar button { min-height: 32px; padding: 6px 12px; font-size: 14px; }
       #help {
         position: fixed;
         right: 12px;
@@ -187,12 +191,20 @@
         <button id="btn-undo" title="Undo (Ctrl/Cmd Z)" aria-label="Undo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></svg></button>
         <button id="btn-redo" title="Redo (Ctrl/Cmd Shift Z)" aria-label="Redo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14l5-5-5-5" /><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" /></svg></button>
         <button id="btn-restart" title="Start again (R)" aria-label="Start again"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5" /><path d="M3.5 3.5v5h5" /></svg></button>
+        <button id="btn-solution" title="Show the solution (S)" aria-label="Show the solution" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 17.5h5" /><path d="M10.5 21h3" /><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2v1.1h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" /></svg></button>
         <button id="btn-help" title="Controls (?)" aria-label="Controls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.3 8.8a3.8 3.8 0 0 1 7.4 1.1c0 2.5-3.7 3-3.7 5.4" /><path d="M12 19.6h.01" /></svg></button>
       </div>
       <div id="level-label"></div>
     </header>
     <main class="stage"><canvas id="board"></canvas></main>
-    <p id="hint"></p>
+    <div id="below">
+      <p id="hint"></p>
+      <div id="solution-bar" hidden>
+        <span>Showing the solution</span>
+        <button id="btn-solution-hide">Hide</button>
+        <button id="btn-solution-apply" class="primary">Solve it for me</button>
+      </div>
+    </div>
     <aside id="help" hidden>
       <h2>Controls</h2>
       <button id="help-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg></button>

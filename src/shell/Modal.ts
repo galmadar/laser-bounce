@@ -5,6 +5,8 @@ export interface ModalOptions {
   numberInput?: { min: number; max: number; value: number };
   ok: { label: string; run: (value: number) => boolean | void };
   cancel?: { label: string; run?: () => void };
+  /** A third choice with no key of its own, between cancel and ok. */
+  extra?: { label: string; run: () => void };
   className?: string;
 }
 
@@ -55,6 +57,15 @@ export class Modals {
       cancel.textContent = `${opts.cancel.label} (Esc)`;
       cancel.addEventListener('click', () => this.cancel());
       row.append(cancel);
+    }
+    if (opts.extra) {
+      const extra = document.createElement('button');
+      extra.textContent = opts.extra.label;
+      extra.addEventListener('click', () => {
+        this.close();
+        opts.extra?.run();
+      });
+      row.append(extra);
     }
     const ok = document.createElement('button');
     ok.className = 'primary';

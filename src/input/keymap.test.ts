@@ -22,6 +22,8 @@ describe('actionForKey', () => {
     expect(actionForKey(key('?', { shiftKey: true }))).toEqual({ type: 'toggleHelp' });
     expect(actionForKey(key('h'))).toEqual({ type: 'toggleHelp' });
     expect(actionForKey(key('Escape'))).toEqual({ type: 'dropPick' });
+    expect(actionForKey(key('s'))).toEqual({ type: 'toggleSolution' });
+    expect(actionForKey(key('S', { shiftKey: true }))).toEqual({ type: 'toggleSolution' });
   });
 
   it('Ctrl and Cmd both work for G and Z; Shift picks redo', () => {
@@ -34,6 +36,7 @@ describe('actionForKey', () => {
 
   it('leaves browser shortcuts alone', () => {
     expect(actionForKey(key('r', { metaKey: true }))).toBeNull(); // reload
+    expect(actionForKey(key('s', { ctrlKey: true }))).toBeNull(); // save page
     expect(actionForKey(key('g'))).toBeNull();
     expect(actionForKey(key('z'))).toBeNull();
     expect(actionForKey(key('n', { altKey: true }))).toBeNull();
