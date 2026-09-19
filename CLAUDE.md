@@ -20,3 +20,13 @@ that the light must reach in order. 10×10 board, drawn with Canvas 2D.
 `src/sim/` and `src/content/` must never import the DOM, canvas or renderer
 code. `npm test` fails if they do. Every level needs a known solution in its
 `solution` field in `src/content/levels.ts`; the tests play it.
+
+# Shipping
+
+Live at https://laser-bounce.vercel.app.
+Repo `galmadar/laser-bounce`. Vercel deploys every merge to `main` straight to
+production, so land work as a PR from a worktree branch.
+
+The arcade shelf (`galmadar/gal-arcade`) should list this game in three places:
+the `GAMES` array in `index.html`, and the request-form lists in
+`requests.html` and `api/_db.js`. A new or renamed game needs all three.
